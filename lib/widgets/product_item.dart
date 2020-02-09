@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final Product item = Provider.of<Product>(context);
+    final Product item = Provider.of<Product>(context, listen: false);
     return ClipRRect(
       borderRadius: BorderRadius.all(
         Radius.circular(10),
@@ -26,8 +26,10 @@ class ProductItem extends StatelessWidget {
         ),
         footer: GridTileBar(
           leading: IconButton(
-            icon:
-                Icon(item.isFavorite ? Icons.favorite : Icons.favorite_border),
+            icon: Consumer<Product>(
+              builder: (ctx, product, child) => Icon(
+                  item.isFavorite ? Icons.favorite : Icons.favorite_border),
+            ),
             color: Theme.of(context).accentColor,
             onPressed: item.toggleFavorite,
           ),
