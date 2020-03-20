@@ -37,6 +37,7 @@ class UserProductsScreen extends StatelessWidget {
                   id: item.id,
                   title: item.title,
                   imageUrl: item.imageUrl,
+                  deleteHandler: products.deleteProduct,
                 ),
                 Divider(),
               ],
