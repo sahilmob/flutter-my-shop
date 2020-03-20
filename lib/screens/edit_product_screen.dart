@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:my_shop/providers/product.dart';
+import 'package:my_shop/providers/products.dart';
 
 class EditProductSecreen extends StatefulWidget {
   static const routeName = "/edit_product";
@@ -54,10 +57,12 @@ class _EditProductScreenState extends State<EditProductSecreen> {
     }
 
     _form.currentState.save();
-    print(_editedProduct.title);
-    print(_editedProduct.price);
-    print(_editedProduct.description);
-    print(_editedProduct.imageUrl);
+    Products products = Provider.of<Products>(
+      context,
+      listen: false,
+    );
+    products.addProduct(_editedProduct);
+    Navigator.of(context).pop();
   }
 
   @override

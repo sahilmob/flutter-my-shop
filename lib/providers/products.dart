@@ -48,4 +48,17 @@ class Products with ChangeNotifier {
   List<Product> get favoriteItems {
     return _items.where((item) => item.isFavorite).toList();
   }
+
+  void addProduct(Product product) {
+    // since we have to add and id to the product and all fields are final we hanve to create new product
+    final newProduct = Product(
+      id: DateTime.now().toString(),
+      title: product.title,
+      price: product.price,
+      description: product.description,
+      imageUrl: product.imageUrl,
+    );
+    _items.add(newProduct);
+    notifyListeners();
+  }
 }
