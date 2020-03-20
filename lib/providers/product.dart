@@ -1,3 +1,4 @@
+import "dart:convert";
 import "package:flutter/foundation.dart";
 
 class Product with ChangeNotifier {
@@ -20,5 +21,15 @@ class Product with ChangeNotifier {
   void toggleFavorite() {
     isFavorite = !isFavorite;
     notifyListeners();
+  }
+
+  String toJson() {
+    return json.encode({
+      "title": title,
+      "description": description,
+      "price": price,
+      "imageUrl": imageUrl,
+      "isFavorite": isFavorite,
+    });
   }
 }
