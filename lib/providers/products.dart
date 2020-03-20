@@ -53,7 +53,7 @@ class Products with ChangeNotifier {
     return _items.where((item) => item.isFavorite).toList();
   }
 
-  Future<void> addProduct(Product product) {
+  Future addProduct(Product product) {
     const url = "https://flutter-shop-ede23.firebaseio.com/products.json";
     return http.post(url, body: product.toJson()).then((response) {
       print(response);
@@ -68,6 +68,8 @@ class Products with ChangeNotifier {
       );
       _items.add(newProduct);
       notifyListeners();
+    }).catchError((error) {
+      throw error;
     });
   }
 
