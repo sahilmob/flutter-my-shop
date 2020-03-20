@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop/providers/product.dart';
 
 class EditProductSecreen extends StatefulWidget {
   static const routeName = "/edit_product";
@@ -11,6 +12,14 @@ class _EditProductScreenState extends State<EditProductSecreen> {
   final _descriptionFocusNode = FocusNode();
   final _imageFocusNode = FocusNode();
   final _imageURLController = TextEditingController();
+  final _form = GlobalKey<FormState>();
+  Product _editedProduct = Product(
+    id: null,
+    title: "",
+    description: "",
+    price: 0,
+    imageUrl: "",
+  );
 
   @override
   void initState() {
@@ -34,15 +43,30 @@ class _EditProductScreenState extends State<EditProductSecreen> {
     }
   }
 
+  void _saveForm() {
+    _form.currentState.save();
+    print(_editedProduct.title);
+    print(_editedProduct.price);
+    print(_editedProduct.description);
+    print(_editedProduct.imageUrl);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Edit Product"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: _saveForm,
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
+          key: _form,
           child: ListView(
             children: <Widget>[
               TextFormField(
@@ -50,6 +74,15 @@ class _EditProductScreenState extends State<EditProductSecreen> {
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_value) {
                   FocusScope.of(context).requestFocus(_priceFocusNode);
+                },
+                onSaved: (value) {
+                  _editedProduct = Product(
+                    id: _editedProduct.id,
+                    title: value,
+                    description: _editedProduct.description,
+                    price: _editedProduct.price,
+                    imageUrl: _editedProduct.imageUrl,
+                  );
                 },
               ),
               TextFormField(
@@ -60,12 +93,30 @@ class _EditProductScreenState extends State<EditProductSecreen> {
                 onFieldSubmitted: (_value) {
                   FocusScope.of(context).requestFocus(_descriptionFocusNode);
                 },
+                onSaved: (value) {
+                  _editedProduct = Product(
+                    id: _editedProduct.id,
+                    title: _editedProduct.title,
+                    description: _editedProduct.description,
+                    price: double.parse(value),
+                    imageUrl: _editedProduct.imageUrl,
+                  );
+                },
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: "Description"),
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
                 focusNode: _descriptionFocusNode,
+                onSaved: (value) {
+                  _editedProduct = Product(
+                    id: _editedProduct.id,
+                    title: _editedProduct.title,
+                    description: value,
+                    price: _editedProduct.price,
+                    imageUrl: _editedProduct.imageUrl,
+                  );
+                },
               ),
               SizedBox(
                 height: 10,
@@ -98,6 +149,16 @@ class _EditProductScreenState extends State<EditProductSecreen> {
                       textInputAction: TextInputAction.done,
                       controller: _imageURLController,
                       focusNode: _imageFocusNode,
+                      onFieldSubmitted: (_value) => _saveForm(),
+                      onSaved: (value) {
+                        _editedProduct = Product(
+                          id: _editedProduct.id,
+                          title: _editedProduct.title,
+                          description: _editedProduct.description,
+                          price: _editedProduct.price,
+                          imageUrl: value,
+                        );
+                      },
                     ),
                   )
                 ],
