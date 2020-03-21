@@ -73,12 +73,11 @@ class Orders with ChangeNotifier, JsonHelpers {
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    const url = "https://flutter-shop-ede23.firebaseio.com/orders.json";
+    final url =
+        "https://flutter-shop-ede23.firebaseio.com/orders.json?auth=$authToken";
     final dateTime = DateTime.now();
     final encodedProducts =
         cartProducts.map((product) => product.toJson()).toList();
-    print(encodedProducts);
-
     try {
       final response = await http.post(
         url,
@@ -90,7 +89,6 @@ class Orders with ChangeNotifier, JsonHelpers {
           },
         ),
       );
-      print(response.statusCode);
       final order = OrderItem(
         id: decode(response.body)["name"],
         amount: total,
