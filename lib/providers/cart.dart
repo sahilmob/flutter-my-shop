@@ -1,6 +1,7 @@
 import "package:flutter/foundation.dart";
+import 'package:my_shop/mixins/json_helpers.dart';
 
-class CartItem {
+class CartItem with JsonHelpers {
   final String id;
   final String title;
   final int quantity;
@@ -12,6 +13,15 @@ class CartItem {
     @required this.quantity,
     @required this.price,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "title": title,
+      "quantity": quantity,
+      "price": price,
+    };
+  }
 }
 
 class Cart with ChangeNotifier {
