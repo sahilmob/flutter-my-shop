@@ -61,7 +61,7 @@ class Orders with ChangeNotifier, JsonHelpers {
         },
       );
 
-      _orders = orders;
+      _orders = orders.reversed.toList();
       notifyListeners();
     } catch (error) {
       throw error;
