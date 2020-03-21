@@ -2,11 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
+import 'package:my_shop/mixins/json_helpers.dart';
 import 'package:my_shop/models/http_exception.dart';
 
 import './product.dart';
 
-class Products with ChangeNotifier {
+class Products with ChangeNotifier, JsonHelpers {
   List<Product> _items = [
     // Product(
     //   id: 'p1',
@@ -58,8 +59,7 @@ class Products with ChangeNotifier {
     try {
       const url = "https://flutter-shop-ede23.firebaseio.com/products.json";
       final response = await http.get(url);
-      final decodedProducts =
-          json.decode(response.body) as Map<String, dynamic>;
+      final decodedProducts = decode(response.body) as Map<String, dynamic>;
       final List<Product> items = [];
       decodedProducts.forEach(
         (key, productData) {
@@ -85,7 +85,7 @@ class Products with ChangeNotifier {
     const url = "https://flutter-shop-ede23.firebaseio.com/products.json";
     try {
       final response = await http.post(url, body: product.toJson());
-      final decodedResponse = json.decode(response.body);
+      final decodedResponse = decode(response.body);
       // since we have to add and id to the product and all fields are final we hanve to create new product
       final newProduct = Product(
         id: decodedResponse["name"],
@@ -109,7 +109,7 @@ class Products with ChangeNotifier {
             "https://flutter-shop-ede23.firebaseio.com/products/${newProduct.id}.json";
         await http.patch(
           url,
-          body: json.encode({
+          body: encode({
             "title": newProduct.title,
             "description": newProduct.description,
             "price": newProduct.price,
