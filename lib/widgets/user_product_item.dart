@@ -13,6 +13,9 @@ class UserProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // If we wnt to use scaffold in a futetue, we have to cache it.
+    final scaffold = Scaffold.of(context);
+
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
@@ -36,8 +39,16 @@ class UserProductItem extends StatelessWidget {
             ),
             IconButton(
               icon: Icon(Icons.delete),
-              onPressed: () {
-                deleteHandler(id);
+              onPressed: () async {
+                try {
+                  await deleteHandler(id);
+                } catch (error) {
+                  scaffold.showSnackBar(
+                    SnackBar(
+                      content: Text("Deleting failed!"),
+                    ),
+                  );
+                }
               },
               color: Theme.of(context).errorColor,
             )

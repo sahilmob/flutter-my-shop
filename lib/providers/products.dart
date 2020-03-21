@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
+import 'package:my_shop/models/http_exception.dart';
 
 import './product.dart';
 
@@ -123,8 +124,20 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String productId) {
-    _items.removeWhere((product) => product.id == productId);
+  void deleteProduct(String productId) async {
+    final url =
+        "https://flutter-shop-ede23.firebaseio.com/products/$productId.json";
+    final exisitingProductIndex =
+        _items.indexWhere((product) => product.id == productId);
+    var exisitingProduct = _items[exisitingProductIndex];
+    _items.removeAt(exisitingProductIndex);
     notifyListeners();
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      _items.insert(exisitingProductIndex, exisitingProduct);
+      notifyListeners();
+      throw HttpException("Could not delete product.");
+    }
+    exisitingProduct = null;
   }
 }
