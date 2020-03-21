@@ -61,6 +61,9 @@ class Products with ChangeNotifier, JsonHelpers {
       final response = await http.get(url);
       final decodedProducts = decode(response.body) as Map<String, dynamic>;
       final List<Product> items = [];
+      if (decodedProducts == null) {
+        return;
+      }
       decodedProducts.forEach(
         (key, productData) {
           items.add(
