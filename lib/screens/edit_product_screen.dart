@@ -100,16 +100,12 @@ class _EditProductScreenState extends State<EditProductSecreen> {
       listen: false,
     );
     if (_editedProduct.id != null) {
-      products.updateProduct(_editedProduct);
-      Navigator.of(context).pop();
-      setState(() {
-        _isLoading = false;
-      });
+      await products.updateProduct(_editedProduct);
     } else {
       try {
         await products.addProduct(_editedProduct);
       } catch (error) {
-        showDialog<Null>(
+        await showDialog<Null>(
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text(
@@ -126,13 +122,12 @@ class _EditProductScreenState extends State<EditProductSecreen> {
             ],
           ),
         );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
       }
     }
+    Navigator.of(context).pop();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override

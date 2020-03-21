@@ -59,9 +59,10 @@ class Products with ChangeNotifier {
       final response = await http.get(url);
       final decodedProducts =
           json.decode(response.body) as Map<String, dynamic>;
+      final List<Product> items = [];
       decodedProducts.forEach(
         (key, productData) {
-          _items.add(
+          items.add(
             Product(
                 id: key,
                 title: productData["title"],
@@ -72,6 +73,7 @@ class Products with ChangeNotifier {
           );
         },
       );
+      _items = items;
       notifyListeners();
     } catch (error) {
       throw error;
@@ -97,12 +99,27 @@ class Products with ChangeNotifier {
     }
   }
 
-  void updateProduct(Product newProduct) {
+  Future<void> updateProduct(Product newProduct) async {
     final productIndex =
         _items.indexWhere((product) => product.id == newProduct.id);
     if (productIndex >= 0) {
-      _items[productIndex] = newProduct;
-      notifyListeners();
+      try {
+        final url =
+            "https://flutter-shop-ede23.firebaseio.com/products/${newProduct.id}.json";
+        await http.patch(
+          url,
+          body: json.encode({
+            "title": newProduct.title,
+            "description": newProduct.description,
+            "price": newProduct.price,
+            "imageUrl": newProduct.imageUrl
+          }),
+        );
+        _items[productIndex] = newProduct;
+        notifyListeners();
+      } catch (error) {
+        throw error;
+      }
     }
   }
 
