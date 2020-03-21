@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:my_shop/providers/auth.dart';
+import 'package:provider/provider.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -100,7 +102,12 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _submit() {
+  Future<void> _submit() async {
+    Auth authProvider = Provider.of<Auth>(
+      context,
+      listen: false,
+    );
+
     if (!_formKey.currentState.validate()) {
       // Invalid!
       return;
@@ -112,7 +119,14 @@ class _AuthCardState extends State<AuthCard> {
     if (_authMode == AuthMode.Login) {
       // Log user in
     } else {
-      // Sign user up
+      try {
+        await authProvider.signup(
+          _authData["email"],
+          _authData["password"],
+        );
+      } catch (error) {
+        print(error);
+      }
     }
     setState(() {
       _isLoading = false;
