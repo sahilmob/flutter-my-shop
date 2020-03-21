@@ -26,8 +26,9 @@ class Product with ChangeNotifier, JsonHelpers {
     notifyListeners();
   }
 
-  Future<void> toggleFavorite() async {
-    final url = "https://flutter-shop-ede23.firebaseio.com/products/$id.json";
+  Future<void> toggleFavorite(String token) async {
+    final url =
+        "https://flutter-shop-ede23.firebaseio.com/products/$id.json?auth=$token";
     _setIsFavoriteValue(!isFavorite);
     try {
       final response = await http.patch(

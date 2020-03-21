@@ -20,13 +20,17 @@ class OrderItem {
 
 class Orders with ChangeNotifier, JsonHelpers {
   List<OrderItem> _orders = [];
+  final authToken;
+
+  Orders(this.authToken);
 
   List<OrderItem> get orders {
     return [..._orders];
   }
 
   Future<void> fetchAndSetOrders() async {
-    const url = "https://flutter-shop-ede23.firebaseio.com/orders.json";
+    final url =
+        "https://flutter-shop-ede23.firebaseio.com/orders.json?auth=$authToken";
     try {
       final response = await http.get(url);
       final decodedRepsonse = decode(response.body) as Map<String, dynamic>;

@@ -43,6 +43,10 @@ class Products with ChangeNotifier, JsonHelpers {
     // ),
   ];
 
+  final String authToken;
+
+  Products(this.authToken, this._items);
+
   List<Product> get items {
     return [..._items];
   }
@@ -57,7 +61,8 @@ class Products with ChangeNotifier, JsonHelpers {
 
   Future<void> fetchAndSetProduct() async {
     try {
-      const url = "https://flutter-shop-ede23.firebaseio.com/products.json";
+      final url =
+          "https://flutter-shop-ede23.firebaseio.com/products.json?auth=$authToken";
       final response = await http.get(url);
       final decodedProducts = decode(response.body) as Map<String, dynamic>;
       final List<Product> items = [];
@@ -85,7 +90,8 @@ class Products with ChangeNotifier, JsonHelpers {
   }
 
   Future addProduct(Product product) async {
-    const url = "https://flutter-shop-ede23.firebaseio.com/products.json";
+    final url =
+        "https://flutter-shop-ede23.firebaseio.com/products.json?auth=$authToken";
     try {
       final response = await http.post(url, body: product.toJson());
       final decodedResponse = decode(response.body);
@@ -109,7 +115,7 @@ class Products with ChangeNotifier, JsonHelpers {
     if (productIndex >= 0) {
       try {
         final url =
-            "https://flutter-shop-ede23.firebaseio.com/products/${newProduct.id}.json";
+            "https://flutter-shop-ede23.firebaseio.com/products/${newProduct.id}.json?auth=$authToken";
         await http.patch(
           url,
           body: encode({
@@ -129,7 +135,7 @@ class Products with ChangeNotifier, JsonHelpers {
 
   void deleteProduct(String productId) async {
     final url =
-        "https://flutter-shop-ede23.firebaseio.com/products/$productId.json";
+        "https://flutter-shop-ede23.firebaseio.com/products/$productId.json?auth=$authToken";
     final exisitingProductIndex =
         _items.indexWhere((product) => product.id == productId);
     var exisitingProduct = _items[exisitingProductIndex];
