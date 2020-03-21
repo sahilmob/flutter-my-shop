@@ -53,10 +53,10 @@ class Products with ChangeNotifier {
     return _items.where((item) => item.isFavorite).toList();
   }
 
-  Future addProduct(Product product) {
+  Future addProduct(Product product) async {
     const url = "https://flutter-shop-ede23.firebaseio.com/products.json";
-    return http.post(url, body: product.toJson()).then((response) {
-      print(response);
+    try {
+      final response = await http.post(url, body: product.toJson());
       final decodedResponse = json.decode(response.body);
       // since we have to add and id to the product and all fields are final we hanve to create new product
       final newProduct = Product(
@@ -67,10 +67,9 @@ class Products with ChangeNotifier {
         imageUrl: product.imageUrl,
       );
       _items.add(newProduct);
-      notifyListeners();
-    }).catchError((error) {
+    } catch (error) {
       throw error;
-    });
+    }
   }
 
   void updateProduct(Product newProduct) {
