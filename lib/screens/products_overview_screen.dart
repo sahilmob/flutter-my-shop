@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:my_shop/providers/cart.dart';
+import 'package:my_shop/providers/products.dart';
 import 'package:my_shop/widgets/app_drawer.dart';
 import 'package:my_shop/widgets/badge.dart';
 import 'package:my_shop/widgets/products_grid.dart';
@@ -15,6 +16,26 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   bool _showOnlyFavorite = false;
+  bool _isLoading = false;
+  var _isInit = true;
+
+  @override
+  void didChangeDependencies() {
+    // we don't use  async/await becuaase if we do didChangeDependencies() ASYNC { we change the return value of this built in mathod
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<Products>(context).fetchAndSetProduct().then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+      });
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +77,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: ProductsGrid(_showOnlyFavorite),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductsGrid(_showOnlyFavorite),
     );
   }
 }
