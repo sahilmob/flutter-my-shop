@@ -25,8 +25,50 @@ class Orders with ChangeNotifier, JsonHelpers {
     return [..._orders];
   }
 
+  Future<void> fetchAndSetOrders() async {
+    const url = "https://flutter-shop-ede23.firebaseio.com/orders.json";
+    try {
+      final response = await http.get(url);
+      final decodedRepsonse = decode(response.body) as Map<String, dynamic>;
+      List<OrderItem> orders = [];
+      if (decodedRepsonse == null) {
+        return;
+      }
+      decodedRepsonse.forEach(
+        (key, order) {
+          List<CartItem> productsList = [];
+          var orderProducts = order["products"] as List<dynamic>;
+          orderProducts.forEach(
+            (product) {
+              productsList.add(
+                CartItem(
+                  id: product["id"],
+                  title: product["title"],
+                  quantity: product["quantity"],
+                  price: product["price"],
+                ),
+              );
+            },
+          );
+          orders.add(
+            OrderItem(
+              id: order["id"],
+              dateTime: DateTime.parse(order["dateTime"]),
+              amount: order["amount"],
+              products: productsList,
+            ),
+          );
+        },
+      );
+
+      _orders = orders;
+      notifyListeners();
+    } catch (error) {
+      throw error;
+    }
+  }
+
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    print("ordering");
     const url = "https://flutter-shop-ede23.firebaseio.com/orders.json";
     final dateTime = DateTime.now();
     final encodedProducts =
@@ -56,9 +98,7 @@ class Orders with ChangeNotifier, JsonHelpers {
         order,
       );
       notifyListeners();
-      print("added");
     } catch (error) {
-      print("error");
       print(error);
       throw error;
     }
