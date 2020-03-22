@@ -21,8 +21,9 @@ class OrderItem {
 class Orders with ChangeNotifier, JsonHelpers {
   List<OrderItem> _orders = [];
   final authToken;
+  final userId;
 
-  Orders(this.authToken);
+  Orders(this.authToken, this.userId);
 
   List<OrderItem> get orders {
     return [..._orders];
@@ -30,7 +31,7 @@ class Orders with ChangeNotifier, JsonHelpers {
 
   Future<void> fetchAndSetOrders() async {
     final url =
-        "https://flutter-shop-ede23.firebaseio.com/orders.json?auth=$authToken";
+        "https://flutter-shop-ede23.firebaseio.com/orders/$userId.json?auth=$authToken";
     try {
       final response = await http.get(url);
       final decodedRepsonse = decode(response.body) as Map<String, dynamic>;
@@ -74,7 +75,7 @@ class Orders with ChangeNotifier, JsonHelpers {
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final url =
-        "https://flutter-shop-ede23.firebaseio.com/orders.json?auth=$authToken";
+        "https://flutter-shop-ede23.firebaseio.com/orders/$userId.json?auth=$authToken";
     final dateTime = DateTime.now();
     final encodedProducts =
         cartProducts.map((product) => product.toJson()).toList();
