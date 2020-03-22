@@ -60,10 +60,12 @@ class Products with ChangeNotifier, JsonHelpers {
     return _items.where((item) => item.isFavorite).toList();
   }
 
-  Future<void> fetchAndSetProduct() async {
+  Future<void> fetchAndSetProduct([bool filterByUser = false]) async {
     try {
+      final filterString =
+          filterByUser ? "&orderBy=\"creatorId\"&equalTo=\"$userId\"" : "";
       var url =
-          "https://flutter-shop-ede23.firebaseio.com/products.json?auth=$authToken";
+          "https://flutter-shop-ede23.firebaseio.com/products.json?auth=$authToken$filterString";
       final response = await http.get(url);
       final decodedProducts = decode(response.body) as Map<String, dynamic>;
       final List<Product> items = [];
@@ -100,7 +102,18 @@ class Products with ChangeNotifier, JsonHelpers {
     final url =
         "https://flutter-shop-ede23.firebaseio.com/products.json?auth=$authToken";
     try {
-      final response = await http.post(url, body: product.toJson());
+      final response = await http.post(
+        url,
+        body: encode(
+          {
+            "title": product.title,
+            "description": product.description,
+            "price": product.price,
+            "imageUrl": product.imageUrl,
+            "creatorId": userId
+          },
+        ),
+      );
       final decodedResponse = decode(response.body);
       // since we have to add and id to the product and all fields are final we hanve to create new product
       final newProduct = Product(
@@ -112,6 +125,7 @@ class Products with ChangeNotifier, JsonHelpers {
       );
       _items.add(newProduct);
     } catch (error) {
+      print(error);
       throw error;
     }
   }
