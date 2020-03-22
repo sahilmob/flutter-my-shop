@@ -44,8 +44,9 @@ class Products with ChangeNotifier, JsonHelpers {
   ];
 
   final String authToken;
+  final String userId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> get items {
     return [..._items];
@@ -61,7 +62,7 @@ class Products with ChangeNotifier, JsonHelpers {
 
   Future<void> fetchAndSetProduct() async {
     try {
-      final url =
+      var url =
           "https://flutter-shop-ede23.firebaseio.com/products.json?auth=$authToken";
       final response = await http.get(url);
       final decodedProducts = decode(response.body) as Map<String, dynamic>;
@@ -69,16 +70,22 @@ class Products with ChangeNotifier, JsonHelpers {
       if (decodedProducts == null) {
         return;
       }
+      url =
+          "https://flutter-shop-ede23.firebaseio.com/userFavorites/$userId.json?auth=$authToken";
+      final favoriteResponse = await http.get(url);
+      final favdoriteData = decode(favoriteResponse.body);
       decodedProducts.forEach(
         (key, productData) {
           items.add(
             Product(
-                id: key,
-                title: productData["title"],
-                description: productData["description"],
-                price: productData["price"],
-                imageUrl: productData["imageUrl"],
-                isFavorite: productData["isFavorite"]),
+              id: key,
+              title: productData["title"],
+              description: productData["description"],
+              price: productData["price"],
+              imageUrl: productData["imageUrl"],
+              isFavorite:
+                  favdoriteData == null ? false : favdoriteData[key] ?? false,
+            ),
           );
         },
       );

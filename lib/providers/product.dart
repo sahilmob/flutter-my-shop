@@ -26,16 +26,14 @@ class Product with ChangeNotifier, JsonHelpers {
     notifyListeners();
   }
 
-  Future<void> toggleFavorite(String token) async {
+  Future<void> toggleFavorite(String token, String userid) async {
     final url =
-        "https://flutter-shop-ede23.firebaseio.com/products/$id.json?auth=$token";
+        "https://flutter-shop-ede23.firebaseio.com/userFavorites/$userid/$id.json?auth=$token";
     _setIsFavoriteValue(!isFavorite);
     try {
-      final response = await http.patch(
+      final response = await http.put(
         url,
-        body: encode(
-          {"isFavorite": isFavorite},
-        ),
+        body: encode(isFavorite),
       );
       if (response.statusCode >= 400) {
         throw HttpException("An error occurred");
